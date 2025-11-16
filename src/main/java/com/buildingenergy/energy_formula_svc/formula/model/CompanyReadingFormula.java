@@ -1,9 +1,6 @@
 package com.buildingenergy.energy_formula_svc.formula.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -15,21 +12,25 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity(name = "formula_settings")
+@Entity(name = "company_formula")
 public class CompanyReadingFormula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(nullable = false)
     private BigDecimal pricePerKwh;
 
+    @Column(nullable = false)
     private BigDecimal multiplier;
 
+    @Column(nullable = false)
     private BigDecimal divider;
 
+    @Column(nullable = false)
     private LocalDateTime createdOn;
 
+    @Column(nullable = false)
     private UUID userId;
-
 }

@@ -7,22 +7,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/formula")
-public class FormulaController {
+@RequestMapping("/api/v1/company/formula")
+public class CompanyFormulaController {
 
-    private final CompanyFormulaService formulaService;
+    private final CompanyFormulaService companyFormulaService;
 
-    public FormulaController(CompanyFormulaService formulaService) {
-        this.formulaService = formulaService;
+    public CompanyFormulaController(CompanyFormulaService companyFormulaService) {
+        this.companyFormulaService = companyFormulaService;
     }
 
     @GetMapping
     public ResponseEntity<CompanyFormulaResponse> getFormula(@RequestParam("userId") UUID userId) {
-        return ResponseEntity.ok(formulaService.getCurrentFormula(userId));
+        return ResponseEntity.ok(companyFormulaService.getCurrentFormula(userId));
     }
 
     @PostMapping
@@ -31,16 +30,11 @@ public class FormulaController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        CompanyFormulaResponse response = formulaService.updateFormula(userId, request);
+        CompanyFormulaResponse response = companyFormulaService.updateFormula(userId, request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
-    }
-
-    @GetMapping("/cost")
-    public BigDecimal calculate(@RequestParam("userId") UUID userId, @RequestParam BigDecimal differenceReadings) {
-        return formulaService.calculateCost(userId, differenceReadings);
     }
 
 }

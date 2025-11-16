@@ -3,25 +3,24 @@ package com.buildingenergy.energy_formula_svc.formula.service;
 import com.buildingenergy.energy_formula_svc.dto.CompanyFormulaRequest;
 import com.buildingenergy.energy_formula_svc.dto.CompanyFormulaResponse;
 import com.buildingenergy.energy_formula_svc.formula.model.CompanyReadingFormula;
-import com.buildingenergy.energy_formula_svc.formula.repository.FormulaRepository;
+import com.buildingenergy.energy_formula_svc.formula.repository.CompanyFormulaRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 public class CompanyFormulaService {
 
-    private final FormulaRepository formulaRepository;
+    private final CompanyFormulaRepository companyFormulaRepository;
 
-    public CompanyFormulaService(FormulaRepository formulaRepository) {
-        this.formulaRepository = formulaRepository;
+    public CompanyFormulaService(CompanyFormulaRepository companyFormulaRepository) {
+        this.companyFormulaRepository = companyFormulaRepository;
     }
 
     public CompanyFormulaResponse getCurrentFormula(UUID userId) {
-        return formulaRepository.findTopByUserIdOrderByCreatedOnDesc(userId).map(this::toResponse).orElseGet(() -> defaultFormula(userId));
+        return companyFormulaRepository.findTopByUserIdOrderByCreatedOnDesc(userId).map(this::toResponse).orElseGet(() -> defaultFormula(userId));
     }
 
     private CompanyFormulaResponse defaultFormula(UUID userId) {
@@ -33,7 +32,7 @@ public class CompanyFormulaService {
                 .userId(userId)
                 .build();
 
-        return toResponse(formulaRepository.save(defaultFormula));
+        return toResponse(companyFormulaRepository.save(defaultFormula));
     }
 
     public CompanyFormulaResponse updateFormula(UUID userId, CompanyFormulaRequest request) {
@@ -45,18 +44,10 @@ public class CompanyFormulaService {
                 .userId(userId)
                 .build();
 
-        return toResponse(formulaRepository.save(formula));
+        return toResponse(companyFormulaRepository.save(formula));
     }
 
-    public BigDecimal calculateCost(UUID userId, BigDecimal differenceReadings) {
-        CompanyFormulaResponse currentFormula = getCurrentFormula(userId);
-
-        BigDecimal cost = differenceReadings.multiply(currentFormula.getPricePerKwh()).multiply(currentFormula.getMultiplier());
-
-        return cost.divide(currentFormula.getDivider(), 2, RoundingMode.HALF_UP);
-    }
-
-    private CompanyFormulaResponse toResponse(CompanyReadingFormula fs) {
-        return new CompanyFormulaResponse(fs.getPricePerKwh(), fs.getMultiplier(), fs.getDivider());
+    private CompanyFormulaResponse toResponse(CompanyReadingFormula crf) {
+        return new CompanyFormulaResponse(crf.getPricePerKwh(), crf.getMultiplier(), crf.getDivider());
     }
 }

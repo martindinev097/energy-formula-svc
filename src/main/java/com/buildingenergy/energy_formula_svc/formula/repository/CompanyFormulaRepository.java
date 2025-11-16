@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface FormulaRepository extends JpaRepository<CompanyReadingFormula, UUID> {
+public interface CompanyFormulaRepository extends JpaRepository<CompanyReadingFormula, UUID> {
 
     Optional<CompanyReadingFormula> findTopByUserIdOrderByCreatedOnDesc(UUID userId);
 
