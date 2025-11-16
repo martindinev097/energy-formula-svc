@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 @Service
 public class MeterFormulaService {
@@ -37,7 +36,7 @@ public class MeterFormulaService {
     }
 
     public MeterFormulaResponse getCurrentFormula(UUID userId) {
-        return meterFormulaRepository.findTopByUserIdOrderByCreatedOnDesc(userId).orElseGet(() -> defaultMeterFormula(userId));
+        return meterFormulaRepository.findTopByUserIdOrderByCreatedOnDesc(userId).map(this::toResponse).orElseGet(() -> defaultMeterFormula(userId));
     }
 
     private MeterFormulaResponse defaultMeterFormula(UUID userId) {
@@ -45,6 +44,7 @@ public class MeterFormulaService {
                 .energyPercentage(BigDecimal.ONE)
                 .pricePerKwh(BigDecimal.valueOf(0.2))
                 .divider(BigDecimal.valueOf(2))
+                .createdOn(LocalDateTime.now())
                 .userId(userId)
                 .build();
 
