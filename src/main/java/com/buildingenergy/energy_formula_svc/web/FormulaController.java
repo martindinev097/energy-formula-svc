@@ -1,7 +1,7 @@
 package com.buildingenergy.energy_formula_svc.web;
 
-import com.buildingenergy.energy_formula_svc.dto.MeterFormulaRequest;
-import com.buildingenergy.energy_formula_svc.dto.MeterFormulaResponse;
+import com.buildingenergy.energy_formula_svc.web.dto.MeterFormulaRequest;
+import com.buildingenergy.energy_formula_svc.web.dto.MeterFormulaResponse;
 import com.buildingenergy.energy_formula_svc.formula.service.MeterFormulaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

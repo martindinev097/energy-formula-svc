@@ -1,7 +1,10 @@
 package com.buildingenergy.energy_formula_svc.formula.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -12,25 +15,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity(name = "meter_formula")
+@Document("meter_formula")
 public class MeterReadingFormula {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @MongoId(FieldType.STRING)
     private UUID id;
 
-    @Column(nullable = false)
-    private BigDecimal energyPercentage;
-
-    @Column(nullable = false)
     private BigDecimal pricePerKwh;
 
-    @Column(nullable = false)
     private BigDecimal divider;
 
-    @Column(nullable = false)
     private LocalDateTime createdOn;
 
-    @Column(nullable = false)
     private UUID userId;
 }

@@ -1,7 +1,7 @@
 package com.buildingenergy.energy_formula_svc.formula.service;
 
-import com.buildingenergy.energy_formula_svc.dto.CompanyFormulaRequest;
-import com.buildingenergy.energy_formula_svc.dto.CompanyFormulaResponse;
+import com.buildingenergy.energy_formula_svc.web.dto.CompanyFormulaRequest;
+import com.buildingenergy.energy_formula_svc.web.dto.CompanyFormulaResponse;
 import com.buildingenergy.energy_formula_svc.formula.model.CompanyReadingFormula;
 import com.buildingenergy.energy_formula_svc.formula.repository.CompanyFormulaRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,7 @@ public class CompanyFormulaService {
 
     private CompanyFormulaResponse defaultFormula(UUID userId) {
         CompanyReadingFormula defaultFormula = CompanyReadingFormula.builder()
+                .id(UUID.randomUUID())
                 .pricePerKwh(BigDecimal.valueOf(0.2))
                 .multiplier(BigDecimal.valueOf(13.5))
                 .divider(BigDecimal.valueOf(100))
@@ -37,6 +38,7 @@ public class CompanyFormulaService {
 
     public CompanyFormulaResponse updateFormula(UUID userId, CompanyFormulaRequest request) {
         CompanyReadingFormula formula = CompanyReadingFormula.builder()
+                .id(UUID.randomUUID())
                 .pricePerKwh(request.getPricePerKwh())
                 .multiplier(request.getMultiplier())
                 .divider(request.getDivider())

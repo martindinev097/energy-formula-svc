@@ -1,7 +1,7 @@
 package com.buildingenergy.energy_formula_svc.formula.service;
 
-import com.buildingenergy.energy_formula_svc.dto.MeterFormulaRequest;
-import com.buildingenergy.energy_formula_svc.dto.MeterFormulaResponse;
+import com.buildingenergy.energy_formula_svc.web.dto.MeterFormulaRequest;
+import com.buildingenergy.energy_formula_svc.web.dto.MeterFormulaResponse;
 import com.buildingenergy.energy_formula_svc.formula.model.MeterReadingFormula;
 import com.buildingenergy.energy_formula_svc.formula.repository.MeterFormulaRepository;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class MeterFormulaService {
 
     public MeterFormulaResponse updateMeterFormula(UUID userId, MeterFormulaRequest request) {
         MeterReadingFormula formula = MeterReadingFormula.builder()
-                .energyPercentage(request.getEnergyPercentage())
+                .id(UUID.randomUUID())
                 .pricePerKwh(request.getPricePerKwh())
                 .divider(request.getDivider())
                 .createdOn(LocalDateTime.now())
@@ -32,7 +32,7 @@ public class MeterFormulaService {
     }
 
     private MeterFormulaResponse toResponse(MeterReadingFormula mrf) {
-        return new MeterFormulaResponse(mrf.getEnergyPercentage(), mrf.getPricePerKwh(), mrf.getDivider());
+        return new MeterFormulaResponse(mrf.getPricePerKwh(), mrf.getDivider());
     }
 
     public MeterFormulaResponse getCurrentFormula(UUID userId) {
@@ -41,7 +41,7 @@ public class MeterFormulaService {
 
     private MeterFormulaResponse defaultMeterFormula(UUID userId) {
         MeterReadingFormula defaultMeterFormula = MeterReadingFormula.builder()
-                .energyPercentage(BigDecimal.ONE)
+                .id(UUID.randomUUID())
                 .pricePerKwh(BigDecimal.valueOf(0.2))
                 .divider(BigDecimal.valueOf(2))
                 .createdOn(LocalDateTime.now())
