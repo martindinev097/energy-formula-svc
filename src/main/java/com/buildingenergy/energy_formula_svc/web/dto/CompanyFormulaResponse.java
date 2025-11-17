@@ -1,4 +1,4 @@
-package com.buildingenergy.energy_formula_svc.dto;
+package com.buildingenergy.energy_formula_svc.web.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
