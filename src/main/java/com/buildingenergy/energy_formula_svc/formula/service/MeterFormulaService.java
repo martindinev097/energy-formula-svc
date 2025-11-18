@@ -4,11 +4,16 @@ import com.buildingenergy.energy_formula_svc.web.dto.MeterFormulaRequest;
 import com.buildingenergy.energy_formula_svc.web.dto.MeterFormulaResponse;
 import com.buildingenergy.energy_formula_svc.formula.model.MeterReadingFormula;
 import com.buildingenergy.energy_formula_svc.formula.repository.MeterFormulaRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class MeterFormulaService {
@@ -49,5 +54,18 @@ public class MeterFormulaService {
                 .build();
 
         return toResponse(meterFormulaRepository.save(defaultMeterFormula));
+    }
+
+    @Scheduled(cron = "0 0 0 1 * *")
+    private void cleanupOldFormulas() {
+        List<MeterReadingFormula> allFormulas = meterFormulaRepository.findAll();
+
+        Map<UUID, List<MeterReadingFormula>> grouped = allFormulas.stream()
+                .collect(Collectors.groupingBy(MeterReadingFormula::getUserId));
+
+        grouped.forEach((userId, formulas) -> formulas.stream()
+                .sorted(Comparator.comparing(MeterReadingFormula::getCreatedOn).reversed())
+                .skip(1)
+                .forEach(meterFormulaRepository::delete));
     }
 }
