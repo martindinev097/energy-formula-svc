@@ -4,11 +4,16 @@ import com.buildingenergy.energy_formula_svc.web.dto.CompanyFormulaRequest;
 import com.buildingenergy.energy_formula_svc.web.dto.CompanyFormulaResponse;
 import com.buildingenergy.energy_formula_svc.formula.model.CompanyReadingFormula;
 import com.buildingenergy.energy_formula_svc.formula.repository.CompanyFormulaRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class CompanyFormulaService {
@@ -51,5 +56,18 @@ public class CompanyFormulaService {
 
     private CompanyFormulaResponse toResponse(CompanyReadingFormula crf) {
         return new CompanyFormulaResponse(crf.getPricePerKwh(), crf.getMultiplier(), crf.getDivider());
+    }
+
+    @Scheduled(cron = "0 0 0 1 * *")
+    private void cleanupOldFormulas() {
+        List<CompanyReadingFormula> allFormulas = companyFormulaRepository.findAll();
+
+        Map<UUID, List<CompanyReadingFormula>> grouped = allFormulas.stream()
+                .collect(Collectors.groupingBy(CompanyReadingFormula::getUserId));
+
+        grouped.forEach((userId, formulas) -> formulas.stream()
+                .sorted(Comparator.comparing(CompanyReadingFormula::getCreatedOn).reversed())
+                .skip(1)
+                .forEach(companyFormulaRepository::delete));
     }
 }

@@ -40,7 +40,6 @@ public class FormulaController {
 
     @GetMapping("/meter/formula")
     public ResponseEntity<MeterFormulaResponse> getMeterFormula(@RequestParam("userId") UUID userId) {
-        System.out.println("Formula: " + meterFormulaService.getCurrentFormula(userId));
         return ResponseEntity.ok(meterFormulaService.getCurrentFormula(userId));
     }
 
