@@ -45,7 +45,6 @@ public class FormulaController {
 
     @PutMapping("/meter/formula")
     public ResponseEntity<MeterFormulaResponse> updateMeterFormula(@RequestParam("userId") UUID userId, @RequestBody MeterFormulaRequest request) {
-
         MeterFormulaResponse response = meterFormulaService.updateMeterFormula(userId, request);
 
         return ResponseEntity

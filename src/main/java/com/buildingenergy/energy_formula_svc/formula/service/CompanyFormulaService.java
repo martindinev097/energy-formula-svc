@@ -4,6 +4,7 @@ import com.buildingenergy.energy_formula_svc.web.dto.CompanyFormulaRequest;
 import com.buildingenergy.energy_formula_svc.web.dto.CompanyFormulaResponse;
 import com.buildingenergy.energy_formula_svc.formula.model.CompanyReadingFormula;
 import com.buildingenergy.energy_formula_svc.formula.repository.CompanyFormulaRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CompanyFormulaService {
 
@@ -51,6 +53,8 @@ public class CompanyFormulaService {
                 .userId(userId)
                 .build();
 
+        log.info("Company formula updated by user with id: [%s] at: [%s]".formatted(userId, LocalDateTime.now()));
+
         return toResponse(companyFormulaRepository.save(formula));
     }
 
@@ -69,5 +73,7 @@ public class CompanyFormulaService {
                 .sorted(Comparator.comparing(CompanyReadingFormula::getCreatedOn).reversed())
                 .skip(1)
                 .forEach(companyFormulaRepository::delete));
+
+        log.info("Running scheduled company formula deletion");
     }
 }

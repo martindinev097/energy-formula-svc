@@ -4,6 +4,7 @@ import com.buildingenergy.energy_formula_svc.web.dto.MeterFormulaRequest;
 import com.buildingenergy.energy_formula_svc.web.dto.MeterFormulaResponse;
 import com.buildingenergy.energy_formula_svc.formula.model.MeterReadingFormula;
 import com.buildingenergy.energy_formula_svc.formula.repository.MeterFormulaRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class MeterFormulaService {
 
@@ -32,6 +34,8 @@ public class MeterFormulaService {
                 .createdOn(LocalDateTime.now())
                 .userId(userId)
                 .build();
+
+        log.info("Meter formula updated by user with id: [%s] at: [%s]".formatted(userId, LocalDateTime.now()));
 
         return toResponse(meterFormulaRepository.save(formula));
     }
@@ -67,5 +71,7 @@ public class MeterFormulaService {
                 .sorted(Comparator.comparing(MeterReadingFormula::getCreatedOn).reversed())
                 .skip(1)
                 .forEach(meterFormulaRepository::delete));
+
+        log.info("Running scheduled meter formula deletion");
     }
 }
