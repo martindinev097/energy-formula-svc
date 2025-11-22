@@ -30,19 +30,6 @@ public class CompanyFormulaService {
         return companyFormulaRepository.findTopByUserIdOrderByCreatedOnDesc(userId).map(this::toResponse).orElseGet(() -> defaultFormula(userId));
     }
 
-    private CompanyFormulaResponse defaultFormula(UUID userId) {
-        CompanyReadingFormula defaultFormula = CompanyReadingFormula.builder()
-                .id(UUID.randomUUID())
-                .pricePerKwh(BigDecimal.valueOf(0.2))
-                .multiplier(BigDecimal.valueOf(13.5))
-                .divider(BigDecimal.valueOf(100))
-                .createdOn(LocalDateTime.now())
-                .userId(userId)
-                .build();
-
-        return toResponse(companyFormulaRepository.save(defaultFormula));
-    }
-
     public CompanyFormulaResponse updateFormula(UUID userId, CompanyFormulaRequest request) {
         CompanyReadingFormula formula = CompanyReadingFormula.builder()
                 .id(UUID.randomUUID())
@@ -58,21 +45,42 @@ public class CompanyFormulaService {
         return toResponse(companyFormulaRepository.save(formula));
     }
 
-    private CompanyFormulaResponse toResponse(CompanyReadingFormula crf) {
-        return new CompanyFormulaResponse(crf.getPricePerKwh(), crf.getMultiplier(), crf.getDivider());
-    }
-
     @Scheduled(cron = "0 0 0 1 * *")
-    private void cleanupOldFormulas() {
+    public void cleanupOldFormulas() {
         List<CompanyReadingFormula> allFormulas = companyFormulaRepository.findAll();
 
         Map<UUID, List<CompanyReadingFormula>> grouped = allFormulas.stream()
                 .collect(Collectors.groupingBy(CompanyReadingFormula::getUserId));
 
-        grouped.forEach((userId, formulas) -> formulas.stream()
+        grouped.values().forEach(this::cleanup);
+    }
+
+    private CompanyFormulaResponse defaultFormula(UUID userId) {
+        CompanyReadingFormula defaultFormula = CompanyReadingFormula.builder()
+                .id(UUID.randomUUID())
+                .pricePerKwh(BigDecimal.valueOf(0.2))
+                .multiplier(BigDecimal.valueOf(13.5))
+                .divider(BigDecimal.valueOf(100))
+                .createdOn(LocalDateTime.now())
+                .userId(userId)
+                .build();
+
+        return toResponse(companyFormulaRepository.save(defaultFormula));
+    }
+
+    private CompanyFormulaResponse toResponse(CompanyReadingFormula crf) {
+        return new CompanyFormulaResponse(crf.getPricePerKwh(), crf.getMultiplier(), crf.getDivider());
+    }
+
+    private void cleanup(List<CompanyReadingFormula> formulas) {
+        if (formulas.size() <= 1) {
+            return;
+        }
+
+        formulas.stream()
                 .sorted(Comparator.comparing(CompanyReadingFormula::getCreatedOn).reversed())
                 .skip(1)
-                .forEach(companyFormulaRepository::delete));
+                .forEach(companyFormulaRepository::delete);
 
         log.info("Running scheduled company formula deletion");
     }

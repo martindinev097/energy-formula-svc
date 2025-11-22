@@ -40,12 +40,18 @@ public class MeterFormulaService {
         return toResponse(meterFormulaRepository.save(formula));
     }
 
-    private MeterFormulaResponse toResponse(MeterReadingFormula mrf) {
-        return new MeterFormulaResponse(mrf.getPricePerKwh(), mrf.getDivider());
-    }
-
     public MeterFormulaResponse getCurrentFormula(UUID userId) {
         return meterFormulaRepository.findTopByUserIdOrderByCreatedOnDesc(userId).map(this::toResponse).orElseGet(() -> defaultMeterFormula(userId));
+    }
+
+    @Scheduled(cron = "0 0 0 1 * *")
+    public void cleanupOldFormulas() {
+        List<MeterReadingFormula> allFormulas = meterFormulaRepository.findAll();
+
+        Map<UUID, List<MeterReadingFormula>> grouped = allFormulas.stream()
+                .collect(Collectors.groupingBy(MeterReadingFormula::getUserId));
+
+        grouped.values().forEach(this::cleanup);
     }
 
     private MeterFormulaResponse defaultMeterFormula(UUID userId) {
@@ -60,17 +66,19 @@ public class MeterFormulaService {
         return toResponse(meterFormulaRepository.save(defaultMeterFormula));
     }
 
-    @Scheduled(cron = "0 0 0 1 * *")
-    private void cleanupOldFormulas() {
-        List<MeterReadingFormula> allFormulas = meterFormulaRepository.findAll();
+    private MeterFormulaResponse toResponse(MeterReadingFormula mrf) {
+        return new MeterFormulaResponse(mrf.getPricePerKwh(), mrf.getDivider());
+    }
 
-        Map<UUID, List<MeterReadingFormula>> grouped = allFormulas.stream()
-                .collect(Collectors.groupingBy(MeterReadingFormula::getUserId));
+    private void cleanup(List<MeterReadingFormula> formulas) {
+        if (formulas.size() <= 1) {
+            return;
+        }
 
-        grouped.forEach((userId, formulas) -> formulas.stream()
+        formulas.stream()
                 .sorted(Comparator.comparing(MeterReadingFormula::getCreatedOn).reversed())
                 .skip(1)
-                .forEach(meterFormulaRepository::delete));
+                .forEach(meterFormulaRepository::delete);
 
         log.info("Running scheduled meter formula deletion");
     }
