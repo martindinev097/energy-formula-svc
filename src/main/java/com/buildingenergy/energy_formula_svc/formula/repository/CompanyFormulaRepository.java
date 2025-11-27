@@ -12,4 +12,5 @@ public interface CompanyFormulaRepository extends MongoRepository<CompanyReading
 
     Optional<CompanyReadingFormula> findTopByUserIdOrderByCreatedOnDesc(UUID userId);
 
+    int countByUserId(UUID userId);
 }
