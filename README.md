@@ -1,7 +1,7 @@
 # Energy Formula Service (Microservice)
 
 ### Description
-This is a Spring Boot microservice that handles energy cost formula calculations for the **Substation Manager** app.
+This is a Spring Boot microservice that handles energy cost formula calculations for the **Substation Manager** system.
 
 It provides endpoints to define, update, and apply energy consumption formulas used for company meter readings.
 
@@ -9,6 +9,8 @@ It provides endpoints to define, update, and apply energy consumption formulas u
 - Java 17
 - Spring Boot 3.4.0
 - Spring Web
-- Spring Data JPA
+- MongoDB
 - MySQL
 - Lombok
+- Feign (consumed by the main app)
+- Spring Scheduling
