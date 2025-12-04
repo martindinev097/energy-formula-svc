@@ -12,7 +12,7 @@ public class ApiKeyInterceptor implements HandlerInterceptor {
     private static final String API_KEY = "secretKey123";
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String apiKey = request.getHeader("SM-API-KEY");
 
         if (!API_KEY.equals(apiKey)) {
